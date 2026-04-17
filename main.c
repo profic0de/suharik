@@ -1,7 +1,8 @@
 #include "kit.h"
 
+int file_store(char* filename);
+
 int main() {
-    auto_free(malloc(1));
-    auto_free(malloc(1));
+    file_store("src.sk");
     return 0;
 }

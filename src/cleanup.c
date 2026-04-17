@@ -12,10 +12,6 @@ void* auto_free(void* ptr) {
 __attribute__((destructor))
 static void cleanup() {
     void** temp = pointers;
-    print("Cleaning...");
-    while (*temp) {
-        print("%p",*temp);
-        free(*temp++);
-    }
+    while (*temp) free(*temp++);
     free(pointers);   
 }
