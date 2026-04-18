@@ -1,6 +1,7 @@
 #ifndef KIT_H
 #define KIT_H
 
+#include <regex.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

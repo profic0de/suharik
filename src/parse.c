@@ -6,6 +6,7 @@ struct token{
         KEY,
         NUM,
         STR,
+        IDENT,
         OPER
     } type;
 };
@@ -39,29 +40,80 @@ int get_keyword(const char *line, const char **keywords) {
     return 0;
 }
 
-const char* keywords[] = {"func","#include",NULL};
-
+// const char* keywords[] = {"func","#include",NULL};
 static struct token* parse_token(struct file* file, size_t* offset) {
-    char* end = file->bytes+file->filelen;
-    char* bytes = file->bytes+*offset;
-    size_t len;
-    while (!(len = get_keyword(bytes++, keywords)))
-        if (bytes>=end) return NULL;
-
-    print("%lu: %s",len,bytes);
-    struct token* token = auto_free(calloc(1, sizeof(struct token)));
-    token->type=KEY;
-    token->value=auto_free(strndup(bytes, len));
-    *offset = (bytes - file->bytes) + len;
-    return token;
+    char* bytes = file->bytes + *offset;
+    char* end = file->bytes + file->filelen;
+    
+    // Skip whitespace
+    while (bytes < end && isspace(*bytes)) {
+        bytes++;
+        (*offset)++;
+    }
+    
+    if (bytes >= end) return NULL;
+    
+    regex_t regex;
+    regmatch_t match;
+    int ret;
+    
+    const char* patterns[] = {
+        "^[0-9]+\\.?[0-9]*",
+        "^(func|#include|if|else)",
+        "^\"[^\"]*\"",
+        "^[a-zA-Z_][a-zA-Z0-9_]*",
+        "^[+*/()==-]",
+        NULL
+    };
+    
+    int types[] = {NUM, KEY, STR, IDENT, OPER};
+    
+    for (int i = 0; patterns[i]; i++) {
+        memset(&regex, 0, sizeof(regex));  // Initialize regex_t
+        
+        if (regcomp(&regex, patterns[i], REG_EXTENDED) != 0) {
+            print("regcomp failed for pattern %d", i);
+            continue;
+        }
+        
+        // Create null-terminated substring for regexec
+        size_t remaining = end - bytes;
+        char* temp = auto_free(malloc(remaining + 1));
+        memcpy(temp, bytes, remaining);
+        temp[remaining] = '\0';
+        
+        ret = regexec(&regex, temp, 1, &match, 0);
+        regfree(&regex);
+        
+        if (ret == 0) {  // Match found
+            struct token* token = auto_free(calloc(1, sizeof(struct token)));
+            token->type = types[i];
+            size_t len = match.rm_eo - match.rm_so;
+            
+            if (bytes + len > end) {
+                return NULL;
+            }
+            
+            token->value = auto_free(strndup(bytes, len));
+            *offset += len;
+            return token;
+        }
+    }
+    return NULL;
 }
 
+
 int parse_file(int idx) {
-    print("Started parsing:\n%s",files[idx]->bytes);
+    // print("Started parsing:\n%s",files[idx]->bytes);
     struct token* token;
-    size_t offset;
+    size_t offset = 0;
     while ((token = parse_token(files[idx], &offset))) files[idx]->tokens = array_append(files[idx]->tokens,token);
     auto_free(files[idx]->tokens);
+    files[idx]->tokens;
+    while () {
+        
+    }
+    
 
     return 0;
 }
