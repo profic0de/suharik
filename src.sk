@@ -5,4 +5,5 @@ func main() {
   b = 4
   c = 3 + 4
   printf("%d\n",c)
+  printf("%d\"\n",c)
 }
