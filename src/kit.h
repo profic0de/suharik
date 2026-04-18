@@ -1,10 +1,12 @@
 #ifndef KIT_H
 #define KIT_H
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
+#include <sys/stat.h>
 
 void* auto_free(void* ptr);
 void** array_append(void** arr, void* ptr);
@@ -14,6 +16,7 @@ extern struct file {
     char* filename;
     size_t filelen;
     char* bytes;
+    struct token** tokens;
 }** files;
 
 #endif
