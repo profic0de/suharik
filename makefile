@@ -21,6 +21,7 @@ $(OUT): $(OBJ)
 git:
 	@git add .
 	@git commit -m "$$(date +%d/%m/%y)"
+	@git push
 
 prod:
 	gcc $(ARGS) -o $(OUT) $(SRC)
