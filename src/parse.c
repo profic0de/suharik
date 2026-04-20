@@ -94,7 +94,7 @@ static struct token* parse_token(struct file* file, size_t* offset) {
         }
     }
     // Operator or punctuation
-    else if (strchr("+-*/()=,{}", *bytes)) {
+    else if (strchr("+-*/()=,{}><", *bytes)) {
         bytes++;
         token->type = OPER;
     }
