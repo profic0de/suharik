@@ -30,7 +30,7 @@ int get_keyword(const char *line, const char **keywords) {
 }
 
 // const char* keywords[] = {"func","#include",NULL};
-static struct token* parse_token(struct file* file, size_t* offset) {
+static struct token* parse_token(struct file* file, size_t* offset, int* line, int* col) {
     char* bytes = file->bytes + *offset;
     char* end = file->bytes + file->filelen;
     
@@ -38,48 +38,77 @@ static struct token* parse_token(struct file* file, size_t* offset) {
     while (bytes < end && isspace(*bytes) && *bytes != '\n') {
         bytes++;
         (*offset)++;
+        (*col)++;
     }
     
     if (bytes >= end) return NULL;
     
     struct token* token = auto_free(calloc(1, sizeof(struct token)));
     char* start = bytes;
+    int start_col = *col;
+    int start_line = *line;
     
     // Newline(s)
     if (*bytes == '\n') {
         bytes++;
+        (*offset)++;
+        (*line)++;
+        *col = 0;
+        
         // Skip multiple consecutive newlines, treat as single newline
         while (bytes < end && *bytes == '\n') {
             bytes++;
+            (*offset)++;
+            (*line)++;
         }
         token->type = NEWLINE;
         token->value = NULL;
-        *offset += (bytes - start);
+        token->line = start_line;
+        token->col = start_col;
+        token->file = file;
         return token;
     }
     
     // String
     if (*bytes == '"') {
         bytes++;
+        (*col)++;
         while (bytes < end && *bytes != '"') {
-            if (*bytes == '\\') bytes++;
+            if (*bytes == '\\') {
+                bytes++;
+                (*col)++;
+            }
             bytes++;
+            (*col)++;
         }
-        if (bytes < end) bytes++;
+        if (bytes < end) {
+            bytes++;
+            (*col)++;
+        }
         token->type = STR;
     }
     // Number
     else if (isdigit(*bytes)) {
-        while (bytes < end && (isdigit(*bytes) || *bytes == '.')) bytes++;
+        while (bytes < end && (isdigit(*bytes) || *bytes == '.')) {
+            bytes++;
+            (*col)++;
+        }
         token->type = NUM;
     }
     // Identifier/Keyword
     else if (isalpha(*bytes) || *bytes == '_' || *bytes == '#') {
         if (*bytes == '#') {
             bytes++;
-            while (bytes < end && isalpha(*bytes)) bytes++;
+            (*col)++;
+            while (bytes < end && isalpha(*bytes)) {
+                bytes++;
+                (*col)++;
+            }
         } else {
-            while (bytes < end && (isalnum(*bytes) || *bytes == '_')) bytes++;
+            while (bytes < end && (isalnum(*bytes) || *bytes == '_')) {
+                bytes++;
+                (*col)++;
+            }
         }
         
         token->type = IDENT;
@@ -98,6 +127,7 @@ static struct token* parse_token(struct file* file, size_t* offset) {
     else if (strchr("+-*/()=,{}<>!", *bytes)) {
         token->type = OPER;
         bytes++;
+        (*col)++;
         
         // Check for two-character operators
         if (bytes < end) {
@@ -107,6 +137,7 @@ static struct token* parse_token(struct file* file, size_t* offset) {
             for (const char** op = multi_ops; *op; op++) {
                 if (strcmp(two_char, *op) == 0) {
                     bytes++;
+                    (*col)++;
                     break;
                 }
             }
@@ -115,21 +146,27 @@ static struct token* parse_token(struct file* file, size_t* offset) {
     else {
         // Unknown character, skip it and return NULL
         (*offset)++;
+        (*col)++;
         free(token);
         return NULL;
     }
     
     size_t len = bytes - start;
     token->value = auto_free(strndup(start, len));
+    token->line = start_line;
+    token->col = start_col;
+    token->file = file;
     *offset += len;
     return token;
 }
 
 int parse_file(int idx) {
-    // print("Started parsing:\n%s",files[idx]->bytes);
     struct token* token;
     size_t offset = 0;
-    while ((token = parse_token(files[idx], &offset))) files[idx]->tokens = array_append(files[idx]->tokens,token);
+    int line = 1, col = 0;
+    while ((token = parse_token(files[idx], &offset, &line, &col))) {
+        files[idx]->tokens = array_append(files[idx]->tokens, token);
+    }
     auto_free(files[idx]->tokens);
     return 0;
 }
