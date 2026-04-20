@@ -4,10 +4,24 @@ struct scope {
     
 } root;
 
+int file_store(char* filename);
+
 int run_file(int idx) {
     struct token** temp = files[idx]->tokens-1;
     while (*++temp) {
-        printf("%d:%s\n",temp[0]->type,temp[0]->value);
+        switch ((*temp)->type) {
+        case KEY:
+            if (!strcmp((*temp)->value,"import")) {
+                print("%s",(*++temp)->value);
+                while ((++temp)[0]->type==OPER&&(temp)[0]->value[0]==',') {
+                    print("%s",(*++temp)->value);
+                }
+            }
+            break;
+        
+        default:
+            break;
+        }
     }
     return 0;
 }

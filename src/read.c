@@ -15,6 +15,12 @@ int file_store(char* filename) {
         return 1;
     }
 
+    if (files) {
+        struct file **temp = files-1;
+        while (*++temp&&strcmp(temp[0]->filename,filename));
+        if (*temp) return 0;
+    }
+
     FILE* fd = fopen(filename,"r");
     if (!fd) {
         print("failed to open %s",filename);
@@ -30,6 +36,7 @@ int file_store(char* filename) {
     size_t got = fread(bytes, sizeof(char), size, fd);
     if (size > got) {
         print("%lu",got);
+        fclose(fd);
         return 1;
     }
     bytes[got] = 0;
