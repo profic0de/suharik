@@ -10,8 +10,16 @@ struct block {
         SYMBOL,
         KEYWORD
     } type;
-    struct block** content;
+    union {
+        struct block** blocks;
+        char* content;
+    };
 } root;
+
+int parse_chunks(FILE* fd) {
+    char bytes[4096];
+    fread(bytes, sizeof(char), sizeof(bytes), fd);
+}
 
 int file_store(char* filename) {
     struct stat sb;
@@ -37,23 +45,17 @@ int file_store(char* filename) {
         return 1;
     }
 
-    fseek(fd, 0L, SEEK_END);  // Move pointer to the end of the file
-    size_t size = ftell(fd);    // Get current position (total bytes)
-    fseek(fd, 0L, SEEK_SET);
+    fseek(fd, 0L, SEEK_SET);  // Move pointer to the end of the file
+    // ftell(fd);
+    // char* bytes = auto_free(malloc(size+1));
 
-    char* bytes = auto_free(malloc(size+1));
+    // char bytes[4096];
+    // size_t got = fread(bytes, sizeof(char), 4096, fd);
+    // bytes[got] = 0;
 
-    size_t got = fread(bytes, sizeof(char), size, fd);
-    if (size > got) {
-        print("%lu",got);
-        fclose(fd);
-        return 1;
-    }
-    bytes[got] = 0;
-    
     struct file* file = auto_free(calloc(1,sizeof(struct file)));
-    file->bytes = bytes;    
-    file->filelen = size;    
+    // file->bytes = bytes;
+    // file->filelen = 4096;
     file->filename = filename;    
 
     files = array_append(files, file);

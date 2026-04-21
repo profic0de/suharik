@@ -11,10 +11,8 @@
 
 extern struct file{
     char* filename;
-    char* bytes;
-    size_t filelen;
+    // char* bytes;
 }** files;
-
 
 void* auto_free(void* ptr);
 void** array_append(void** arr, void* ptr);
