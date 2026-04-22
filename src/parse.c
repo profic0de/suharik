@@ -1,6 +1,6 @@
 #include "kit.h"
 
-struct file** files;
+char** files;
 struct block {
     enum {
         STRING,
@@ -18,7 +18,9 @@ struct block {
 
 int parse_chunks(FILE* fd) {
     char bytes[4096];
+    
     fread(bytes, sizeof(char), sizeof(bytes), fd);
+    return 0;
 }
 
 int file_store(char* filename) {
@@ -34,8 +36,8 @@ int file_store(char* filename) {
     }
 
     if (files) {
-        struct file **temp = files-1;
-        while (*++temp&&strcmp(temp[0]->filename,filename));
+        char** temp = files-1;
+        while (*++temp&&strcmp(*temp,filename));
         if (*temp) return 0;
     }
 
@@ -52,15 +54,11 @@ int file_store(char* filename) {
     // char bytes[4096];
     // size_t got = fread(bytes, sizeof(char), 4096, fd);
     // bytes[got] = 0;
+    parse_chunks(fd);
 
-    struct file* file = auto_free(calloc(1,sizeof(struct file)));
-    // file->bytes = bytes;
-    // file->filelen = 4096;
-    file->filename = filename;    
+    files = array_append(files, auto_free(strdup(filename)));
 
-    files = array_append(files, file);
-    
-    struct file** temp = files;
+    char** temp = files;
     while (*temp++);
     // parse_file((int)(temp-files)-2);
 
