@@ -19,6 +19,7 @@ struct block {
 
 int parse_fd(FILE* fd) {
     lookup(spaces, " \t\n\r\v\f");
+    lookup(separators, " \t\n\r\v\f,=-+()[]!");
     lookup(digits, "1234567890._");
     static unsigned char keywords[32] = {0}; for (int i = 0; i < 128; i++) if (!isalpha(i) && !isdigit(i) && i != '_') bitset(keywords, i); flip(keywords);
 
