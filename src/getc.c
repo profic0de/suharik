@@ -26,6 +26,7 @@ int __getc(FILE *__stream) {
 #undef ungetc
 int __ungetc(int __c, FILE *__stream) {
     reset_stack(__stream);
+    if (__c == EOF) return EOF;
     int ret = ungetc(__c, __stream);
     if (ret == EOF) return EOF;
 

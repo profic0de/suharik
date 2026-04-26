@@ -54,10 +54,14 @@ int parse_fd(FILE* fd) {
         else str_append(&bytes,c);
 
         if (bitget(multi_oper,c)) {
-            char c2 = getc(fd);
-            char c3 = getc(fd);
-            char cc = bitget(multi_oper,c2);
-            char count = cc+(cc&&bitget(multi_oper,c3));
+            char c2=getc(fd), c3=getc(fd), count=0;
+            if (c2==EOF||c3==EOF) {
+                if (c2==EOF) break;
+                if (c3==EOF) count=bitget(multi_oper,c2);
+            } else {
+                char cc = bitget(multi_oper,c2);
+                count = cc+(cc&&bitget(multi_oper,c3));
+            }
             switch (count) {
             case 0:
                 ungetc(c3, fd);
@@ -65,9 +69,11 @@ int parse_fd(FILE* fd) {
                 break;
             
             case 1:
-                
-            default:
+                ungetc(c3, fd);
                 break;
+            
+            case 2:
+                
             }
         }
 
