@@ -35,13 +35,13 @@ int parse_fd(FILE* fd) {
     static char check;
     if (check||check++) goto skip;
     lookup(spaces, " \t\n\r\v\f");
-    // lookup(digits, "0123456789._");
-    lookup(delimiters, " \t\n\r\v\f,{}[]()<>=+-!/*\"\'");
-    lookup(multi_oper, "<>=+-!/*");
+    lookup(equal_oper, "+-*/%%=!><&|^~.");
+    lookup(both_oper, "+-=><&|");
+    lookup(delimiters, " \t\n\r\v\f,{}[]()+-*/%%=!><&|^~.\"\'");
+    lookup(operators, "+-*/%%=!><&|^~.");
     skip:
     // static unsigned char keywords[32] = {0}; for (int i = 0; i < 128; i++) if (!isalpha(i) && !isdigit(i) && i != '_') bitset(keywords, i); flip(keywords);
     char* bytes = 0;
-    char mode = 0;
     char c;
     while ((c = getc(fd))!=EOF) {
         if (c=='\n') {stack_block(NEWLINE, NULL); continue;} else 
@@ -53,14 +53,14 @@ int parse_fd(FILE* fd) {
         }
         else str_append(&bytes,c);
 
-        if (bitget(multi_oper,c)) {
+        if (bitget(operators,c)) {
             char c2=getc(fd), c3=getc(fd), count=0;
             if (c2==EOF||c3==EOF) {
                 if (c2==EOF) break;
-                if (c3==EOF) count=bitget(multi_oper,c2);
+                if (c3==EOF) count=bitget(operators,c2);
             } else {
-                char cc = bitget(multi_oper,c2);
-                count = cc+(cc&&bitget(multi_oper,c3));
+                char cc = bitget(operators,c2);
+                count = cc+(cc&&bitget(operators,c3));
             }
             switch (count) {
             case 0:
@@ -74,13 +74,12 @@ int parse_fd(FILE* fd) {
                 break;
             
             case 2:
-                
+
                 break;
             }
         }
 
-        while ((c = getc(fd))!=EOF&&!bitget(delimiters,c)) str_append(&bytes,c);
-        if (c!=EOF) ungetc(c, fd);
+        while ((c = getc(fd))!=EOF&&!bitget(delimiters,c)) str_append(&bytes,c); ungetc(c, fd);
 
         printf("%s ",bytes?bytes:"");
         free(bytes);
