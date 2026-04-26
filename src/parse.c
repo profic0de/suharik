@@ -56,8 +56,8 @@ int parse_fd(FILE* fd) {
         switch (mode) {
         case 0:
             while ((c = getc(fd))!=EOF&&!bitget(delimiters,c)) str_append(&bytes,c);
-            ungetc(c, fd);
             if (c==EOF) break;
+            ungetc(c, fd);
             
             break;
         }
