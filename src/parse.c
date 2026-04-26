@@ -6,6 +6,7 @@ struct block {
         KEYWORD,
         STRING,
         NUMBER,
+        FLOAT,
         NEWLINE,
         FUNCTION,
         SYMBOL,
@@ -14,24 +15,52 @@ struct block {
     union {
         struct block** blocks;
         char* content;
+        double num_f;
+        long num_i;
     };
 } root = {.type=FUNCTION};
 
-int parse_fd(FILE* fd) {
-    lookup(spaces, " \t\n\r\v\f");
-    lookup(separators, " ");
-    static unsigned char keywords[32] = {0}; for (int i = 0; i < 128; i++) if (!isalpha(i) && !isdigit(i) && i != '_') bitset(keywords, i); flip(keywords);
+struct block* make_block(char type, void* ptr) {
+    struct block* block = malloc(sizeof(struct block));
+    block->type = type;
+    if (type==FUNCTION) block->blocks=ptr;
+    else if (type==NUMBER) block->num_i=(long)ptr;
+    else if (type==FLOAT) block->num_f = (double)(uintptr_t)ptr;
+    else block->content=ptr;
+    return block;
+}
 
+int parse_fd(FILE* fd) {
+    static char check;
+    if (check||check++) goto skip;
+    lookup(spaces, " \t\n\r\v\f");
+    lookup(delimiters, " \t\n\r\v\f,{}[]()<>=+-!/*\"\'");
+    lookup(double_oper, "<>=+-!/*");
+    skip:
+    // static unsigned char keywords[32] = {0}; for (int i = 0; i < 128; i++) if (!isalpha(i) && !isdigit(i) && i != '_') bitset(keywords, i); flip(keywords);
     char* bytes = 0;
     char mode = 0;
     char c;
-    size_t line = 0;
-    size_t column = 0;
     while ((c = getc(fd))!=EOF) {
-        if (c=='\n') column = (++line-line);
-        else column++;
+        if (bitget(spaces,c)) continue;
+        else if (c=='#') { //Skip comments
+            while ((c = getc(fd))!=EOF&&c!='\n');
+            continue;
+        }
+        else str_append(&bytes,c);
 
-        str_append(&bytes, c);
+        switch (mode) {
+        case 0:
+            while ((c = getc(fd))!=EOF&&!bitget(delimiters,c)) str_append(&bytes,c);
+            if (c==EOF) break;
+            
+            break;
+        }
+        printf("%s ",bytes?bytes:"");
+        free(bytes);
+        bytes = 0;
+
+        if (c==EOF) break;
     }
     printf("%s\n",bytes?bytes:"");
     free(bytes);

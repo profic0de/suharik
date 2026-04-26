@@ -1,6 +1,6 @@
 SRC = $(filter-out $(shell find . -wholename './ignore/*.c'),$(shell find . -name '*.c'))
 OBJ := $(SRC:%=./build/%.o)
-ARGS = -I. -Isrc -Wall -Wno-deprecated-declarations -Wno-nonnull -lcurl -lm
+ARGS = -I. -Isrc -Wall -Wno-deprecated-declarations -Wno-nonnull -Wno-sequence-point -lcurl -lm 
 OUT = out
 
 PROGRAM_ARGS = src.sk
