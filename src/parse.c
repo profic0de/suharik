@@ -35,7 +35,7 @@ int parse_fd(FILE* fd) {
     static char check;
     if (check||check++) goto skip;
     lookup(spaces, " \t\n\r\v\f");
-    lookup(equal_oper, "+-*/%%=!><&|^");
+    lookup(equal_oper, "+-*/%%!><&|^");
     lookup(both_oper, "+-=><&|");
     lookup(delimiters, " \t\n\r\v\f,{}[]()+-*/%%=!><&|^~.\"\'");
     lookup(operators, "+-*/%%=!><&|^~.");
