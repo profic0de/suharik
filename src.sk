@@ -44,6 +44,8 @@ func add(x, y) {
   return x + y
 }
 
+func help(a) {return a}
+
 func multiply(x, y) {
   return x*y
 }

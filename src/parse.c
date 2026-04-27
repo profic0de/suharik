@@ -38,22 +38,30 @@ int parse_fd(FILE* fd) {
     lookup(equal_oper, "+-*/%%!><&|^");
     lookup(double_oper, "+-=><&|");
     lookup(delimiters, " \t\n\r\v\f,{}[]()+-*/%%=!><&|^~.\"\'");
-    lookup(operators, "+-*/%%=!><&|^~.");
+    lookup(operators, "+-*/%%=!><&|^~.{[(,");
     skip:
     // static unsigned char keywords[32] = {0}; for (int i = 0; i < 128; i++) if (!isalpha(i) && !isdigit(i) && i != '_') bitset(keywords, i); flip(keywords);
     char* bytes = 0;
     char c;
     while ((c = getc(fd))!=EOF) {
-        if (c=='\n') {stack_block(NEWLINE, NULL); continue;} else 
+        // if (c=='\n') {stack_block(NEWLINE, NULL); continue;} else 
         if (bitget(spaces,c)) continue;
         else if (c=='#') { //Skip comments
             while ((c = getc(fd))!=EOF&&c!='\n');
-            stack_block(NEWLINE, NULL);
+            // stack_block(NEWLINE, NULL);
             continue;
         }
         else str_append(&bytes,c);
 
-        if (bitget(operators,c)) {
+        if (c=='\''||c=='\"') {
+            char cc=c, p=0;
+            while ((c = getc(fd))!=EOF&&!(c==cc&&p!='\\')) {
+                str_append(&bytes,c);
+                p = c;
+            }
+            goto skip1;
+        }
+        else if (bitget(operators,c)) {
             char c2=getc(fd), c3=getc(fd), count=0;
             if (c2==EOF||c3==EOF) {
                 if (c2==EOF) break;
