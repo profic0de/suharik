@@ -41,7 +41,7 @@ void error_message(const char* filename, size_t line, size_t column, char* error
         while (*msg_text && (*msg_text == ' ' || *msg_text == ':')) msg_text++;
     }
     
-    fprintf(stderr, "%s:%zu:%zu: %s%s:%s %s\n", filename, line, column, color_code, msg_type, "\033[0m", msg_text);
+    fprintf(stderr, "%s:%zu:%zu: %s%s:%s %s\n", filename, line + 1, column, color_code, msg_type, "\033[0m", msg_text);
     
     FILE* fd = fopen(filename, "r");
     if (!fd) return;
@@ -67,7 +67,7 @@ void error_message(const char* filename, size_t line, size_t column, char* error
             }
             
             // Print line with colored token
-            fprintf(stderr, "%5zu | ", line);
+            fprintf(stderr, "%5zu | ", line + 1);
             for (size_t i = 0; line_buffer[i] && line_buffer[i] != '\n'; i++) {
                 if (i >= word_start && i < word_end) {
                     fprintf(stderr, "%s%c\033[0m", color_code, line_buffer[i]);
