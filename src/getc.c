@@ -1,6 +1,6 @@
 #include "kit.h"
 
-size_t line, column;
+size_t line, column, ch;
 
 #define UNGETC_STACK_MAX 8
 static size_t column_stack[UNGETC_STACK_MAX];
@@ -18,6 +18,7 @@ static inline void reset_stack(FILE *stream) {
 int __getc(FILE *__stream) {
     reset_stack(__stream);
     char c = getc(__stream);
+    ch++;
     if (c=='\n') column = (++line-line);
     else column++;
     return c;
@@ -29,6 +30,7 @@ int __ungetc(int __c, FILE *__stream) {
     if (__c == EOF) return EOF;
     int ret = ungetc(__c, __stream);
     if (ret == EOF) return EOF;
+    ch--;
 
     if (stack_top < UNGETC_STACK_MAX)
         column_stack[stack_top++] = column;

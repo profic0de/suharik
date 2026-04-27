@@ -53,6 +53,8 @@ int parse_fd(FILE* fd) {
         }
         else str_append(&bytes,c);
 
+        size_t s_line=line, s_column=column, s_ch=ch;
+
         if (c=='\''||c=='\"') {
             char cc=c, p=0;
             while ((c = getc(fd))!=EOF&&!(c==cc&&p!='\\')) {
@@ -99,6 +101,13 @@ int parse_fd(FILE* fd) {
         while ((c = getc(fd))!=EOF&&!bitget(delimiters,c)) str_append(&bytes,c); ungetc(c, fd);
         skip1:
 
+        char* handle_token(char** bytes);
+        char* error = handle_token(&bytes);
+
+        if (error) {
+            //TODO: Make a function that will trigger an error
+        }
+
         printf("%s ",bytes?bytes:"");
         free(bytes);
         bytes = 0;
@@ -110,6 +119,12 @@ int parse_fd(FILE* fd) {
     
     return 0;
 }
+
+char* handle_token(char** bytes) {
+
+    return NULL;
+}
+
 
 int file_store(char* filename) {
     struct stat sb;
@@ -135,19 +150,20 @@ int file_store(char* filename) {
         return 1;
     }
 
-    fseek(fd, 0L, SEEK_SET);  // Move pointer to the end of the file
+    // fseek(fd, 0L, SEEK_SET);  // Move pointer to the end of the file
     // ftell(fd);
     // char* bytes = auto_free(malloc(size+1));
 
     // char bytes[4096];
     // size_t got = fread(bytes, sizeof(char), 4096, fd);
     // bytes[got] = 0;
-    parse_fd(fd);
 
     files = array_append(files, auto_free(strdup(filename)));
 
-    char** temp = files;
-    while (*temp++);
+    parse_fd(fd);
+
+    // char** temp = files;
+    // while (*temp++);
     // parse_file((int)(temp-files)-2);
 
     fclose(fd);
