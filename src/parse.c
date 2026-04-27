@@ -37,7 +37,6 @@ int parse_fd(FILE* fd) {
     lookup(spaces, " \t\n\r\v\f");
     lookup(equal_oper, "+-*/%%!><&|^");
     lookup(double_oper, "+-=><&|");
-    lookup(single_oper, "+-*/%%=!><&|^~.");
     lookup(delimiters, " \t\n\r\v\f,{}[]()+-*/%%=!><&|^~.\"\'");
     lookup(operators, "+-*/%%=!><&|^~.");
     skip:
@@ -66,13 +65,18 @@ int parse_fd(FILE* fd) {
             switch (count) {      
             case 2:
                 if ((c=='<'||c=='>')&&c==c2&&c3=='=') {
-                    str_append(&bytes,c);
-                    str_append(&bytes,c);
+                    str_append(&bytes,c2);
+                    str_append(&bytes,c3);
                     break;
                 }
 
             case 1:
                 ungetc(c3, fd);
+                if (bitget(equal_oper,c)&&c2=='=') {
+                    str_append(&bytes,c2);
+                } else if (bitget(double_oper,c)&&c==c2) {
+                    str_append(&bytes,c2);
+                }
 
                 break;
 
