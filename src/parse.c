@@ -73,12 +73,16 @@ int parse_fd(FILE* fd) {
                 char cc = bitget(operators,c2);
                 count = cc+(cc&&bitget(operators,c3));
             }
-            switch (count) {      
+            switch (count) {
             case 2:
                 if ((c=='<'||c=='>')&&c==c2&&c3=='=') {
                     str_append(&bytes,c2);
                     str_append(&bytes,c3);
                     break;
+                } else {
+                    char** temp = files;
+                    while (*++temp);
+                    error_message(*(--temp), s_line, s_column, 3, "error: unknown token");
                 }
 
             case 1:
