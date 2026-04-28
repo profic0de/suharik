@@ -1,5 +1,5 @@
 import requests, basics
-><<
+
 func main() {
   # Variables and basic arithmetic
   a = 3

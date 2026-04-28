@@ -82,7 +82,9 @@ int parse_fd(FILE* fd) {
                 } else {
                     char** temp = files;
                     while (*++temp);
-                    error_message(*(--temp), s_line, s_column, 3, "error: unknown token: %c%c%c"),c,c2,c3;
+                    error_message(*(--temp), s_line, s_column, 3, "error: unknown operator");
+                    free(bytes);
+                    return 1;
                 }
 
             case 1:
@@ -93,6 +95,12 @@ int parse_fd(FILE* fd) {
                 } else if (bitget(double_oper,c)&&c==c2) {
                     str_append(&bytes,c2);
                     break;
+                } else {
+                    char** temp = files;
+                    while (*++temp);
+                    error_message(*(--temp), s_line, s_column, 3, "error: unknown operator");
+                    free(bytes);
+                    return 1;
                 }
 
             case 0:
