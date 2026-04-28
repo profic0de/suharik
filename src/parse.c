@@ -82,14 +82,14 @@ int parse_fd(FILE* fd) {
                 }
 
             case 1:
-                ungetc(c3, fd);
+                c3 = (ungetc(c3, fd),EOF);
                 if (bitget(equal_oper,c)&&c2=='=') {
                     str_append(&bytes,c2);
+                    break;
                 } else if (bitget(double_oper,c)&&c==c2) {
                     str_append(&bytes,c2);
+                    break;
                 }
-
-                break;
 
             case 0:
                 ungetc(c3, fd);
