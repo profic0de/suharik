@@ -1,8 +1,15 @@
 #include "kit.h"
+#include <stdarg.h>
 
 //This file wasn't made by a human
 
-void error_message(const char* filename, size_t s_line, size_t s_column, size_t token_len, char* error) {
+void error_message(const char* filename, size_t s_line, size_t s_column, size_t token_len, const char* fmt, ...) {
+    // Format the error message
+    char error[1024];
+    va_list args;
+    va_start(args, fmt);
+    vsnprintf(error, sizeof(error), fmt, args);
+    va_end(args);
     // Determine message type and color
     const char* msg_type = "note";
     const char* color_code = "\033[1;36m";  // cyan by default

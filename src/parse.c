@@ -82,7 +82,7 @@ int parse_fd(FILE* fd) {
                 } else {
                     char** temp = files;
                     while (*++temp);
-                    error_message(*(--temp), s_line, s_column, 3, "error: unknown token");
+                    error_message(*(--temp), s_line, s_column, 3, "error: unknown token: %c%c%c"),c,c2,c3;
                 }
 
             case 1:
