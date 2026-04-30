@@ -7,7 +7,9 @@ char* handle_token(char** bytes) {
     
     char** temp = tokens-1;
 
-    while (*++temp);
+    while (*++temp) {
+        
+    }
 
     return NULL;
 }
