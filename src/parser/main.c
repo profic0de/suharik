@@ -7,6 +7,8 @@ char* handle_token(char** bytes) {
     
     char** temp = tokens-1;
 
+    #define token(offset) (*(temp+(offset)))
+
     while (*++temp) {
         
     }
