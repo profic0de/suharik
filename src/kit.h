@@ -29,4 +29,7 @@ void error_message(const char* filename, size_t s_line, size_t s_column, size_t 
 #define array_append(arr, ptr) ((__typeof__(arr))array_append(((void**)(arr)), ((void*)(ptr))))
 #define print(fmt, ...) printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
+#undef EOF
+#define EOF 0xFF
+
 #endif
