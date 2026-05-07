@@ -15,13 +15,19 @@ int parse_fd(FILE* fd) {
     // lookup(operators, "+-*/%%=!><&|^~.{[(,");
     // skip:
 
+    #define chr (c=getc(fd))!=EOF
+
     int c;
     char p = 0;
     char* bytes = 0;
-    while ((c=getc(fd))!=EOF) {
-        if (c=='#'); // Preprocessor
+    while (chr) {
+        if (c=='#') {
+            if (chr&&c==" ") while (chr&&c!='\n');
+            while (chr&&c!='\n') str_append(&bytes, c);
+            if (c==EOF) break;
+        }
 
-        p = c;
+        p = (char)c;
     }
     
 
