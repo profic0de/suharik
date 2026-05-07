@@ -1,33 +1,6 @@
 #include "kit.h"
 
 char** files;
-struct block {
-    enum {
-        KEYWORD,
-        STRING,
-        NUMBER,
-        FLOAT,
-        NEWLINE,
-        FUNCTION,
-        SYMBOL
-    } type;
-    union {
-        struct block** blocks;
-        char* content;
-        double num_f;
-        long num_i;
-    };
-} root = {.type=FUNCTION};
-
-struct block* make_block(char type, void* ptr) {
-    struct block* block = malloc(sizeof(struct block));
-    block->type = type;
-    if (type==FUNCTION) block->blocks=ptr;
-    else if (type==NUMBER) block->num_i=(long)ptr;
-    else if (type==FLOAT) block->num_f = (double)(uintptr_t)ptr;
-    else block->content=ptr;
-    return auto_free(block);
-}
 
 #define stack_block(type, ptr) root.blocks = array_append(root.blocks, make_block(type, ptr))
 
@@ -42,10 +15,11 @@ int parse_fd(FILE* fd) {
     lookup(operators, "+-*/%%=!><&|^~.{[(,");
     skip:
 
-    char c, p = 0;
+    int c;
+    char p = 0;
     char* bytes = 0;
     while ((c=getc(fd))!=EOF) {
-        if (c=='#') // Preprocessor
+        if (c=='#'); // Preprocessor
 
         p = c;
     }
