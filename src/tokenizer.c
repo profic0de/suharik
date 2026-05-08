@@ -54,7 +54,8 @@ int parse_fd(FILE* fd) {
             FLOAT,
             KEYWORD,
             OPERATOR,
-            STRING
+            STRING,
+            PATH
         } token_type = NONE;
 
         size_t tc = column;
@@ -64,8 +65,8 @@ int parse_fd(FILE* fd) {
         while (chr) {
             if (c=='.') {
                 if (token_type==NUMBER) token_type = FLOAT;
-                else if (token_type==FLOAT||token_type==NONE) 
-                    return (error_message(file[0]->filename, line-1, tc, 1, "check"), bytes = (free(bytes), NULL), 1);
+                else if (token_type==FLOAT||token_type==NONE)
+                    return (error_message(file[0]->filename, line, tc, 1, token_type?"check":"error: can't start with a dot"), bytes = (free(bytes), NULL), 1);
             }
         }
     }
