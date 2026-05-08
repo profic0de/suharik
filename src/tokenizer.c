@@ -19,12 +19,27 @@ int parse_fd(FILE* fd) {
 
     int c;
     char p = 0;
-    char* bytes = 0;
+    char* bytes = NULL;
     while (chr) {
-        if (c=='#') {
-            if (chr&&c==" ") while (chr&&c!='\n');
+        if (bytes) bytes = (free(bytes), NULL);
+
+        if (c=='#') { //Preprocessor
             while (chr&&c!='\n') str_append(&bytes, c);
-            if (c==EOF) break;
+            if (!bytes) continue;
+            int len = strlen(bytes);
+            if (len<10) continue;
+            if (strncmp(bytes, "require ", 8)) continue;
+            // puts(bytes+8);
+            char* temp = bytes+8;
+            char end = temp[0]=='\''||temp[0]=='"'?temp[0]:temp[0]=='<'?'>':'\n';
+            // putc(end, stdout);
+
+            int i = 0;
+            while (*++temp&&*temp!=end) i++;
+
+            if (!(*temp)) continue;
+            printf("%.*s\n", i, bytes+9);
+            
         }
 
         p = (char)c;

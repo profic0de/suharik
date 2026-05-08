@@ -3,7 +3,7 @@ OBJ := $(SRC:%=./build/%.o)
 ARGS = -std=c23 -I. -Isrc -Wall -Wno-misleading-indentation -Wno-deprecated-declarations -Wno-nonnull -Wno-sequence-point
 OUT = out
 
-PROGRAM_ARGS = src.sk
+PROGRAM_ARGS = src.t
 
 run: $(OUT)
 	@echo --------------------
