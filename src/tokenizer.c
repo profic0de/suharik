@@ -18,7 +18,6 @@ int parse_fd(FILE* fd) {
     #define chr (c=getc(fd))!=EOF
 
     int c;
-    char p = 0;
     char* bytes = NULL;
     while (chr) {
         if (bytes) bytes = (free(bytes), NULL);
@@ -38,11 +37,10 @@ int parse_fd(FILE* fd) {
             while (*++temp&&*temp!=end) i++;
 
             if (!(*temp)) continue;
-            printf("%.*s\n", i, bytes+9);
-            
+            // printf("%.*s\n", i, bytes+9);
+            //TODO: Use this someday
         }
 
-        p = (char)c;
     }
     
 
