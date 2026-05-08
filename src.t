@@ -1,4 +1,4 @@
-import requests, basics
+#require "stdio"
 
 func main() {
   # Variables and basic arithmetic
@@ -6,7 +6,7 @@ func main() {
   b = 4
   c = 3 + 4
   d = 10 / 2
-  
+
   # Bitwise operations
   e = 3 >> 4
   f = 8 << 2
