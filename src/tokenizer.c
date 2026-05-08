@@ -38,14 +38,18 @@ int parse_fd(FILE* fd) {
             while (*++str&&*str!=end) i++;
 
             if (!*str) continue;
-            // printf("%.*s\n", i, bytes+9);
+            printf("%.*s\n", i+1, bytes+8);
 
             struct file** temp = files-1;
             while (*++temp);
 
-            if (dict_append(&(temp-1)[0]->requirements, auto_free(strndup(bytes+9, i))))
+            if (dict_append(&(temp-1)[0]->requirements, auto_free(strndup(bytes+8, i+1))))
                 return (error_message((temp-1)[0]->filename, line-1, tc+9, i+2, "error: Requirement allready satisfied"), bytes = (free(bytes), NULL), 1);
-        }
+            continue;
+        } else if (isspace(c)) continue;
+
+        // ungetc(c, fd);
+        
     }
 
     return 0;

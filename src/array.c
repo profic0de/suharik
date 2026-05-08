@@ -24,19 +24,19 @@ int dict_append(char*** arr, char* ptr) {
     #define arr (*arr)
 
     if (!arr) {
-        char** temp = calloc(2, sizeof(ptr));
+        char** temp = calloc(2, sizeof(char*));
         temp[0] = ptr;
         arr = temp;
         return 0;
     }
 
-    char** temp = arr-1; 
-    while (*++temp) if (!strcmp(*temp, ptr)) return 1;
+    char** temp = arr; 
+    while (*temp) if (!strcmp(*temp++, ptr)) return 1;
 
     size_t diff = (size_t)(temp-arr);
-    arr[diff-1] = ptr;
-    arr = realloc(arr, sizeof(char*)*(diff+1));
-    arr[diff] = 0;
+    arr = realloc(arr, sizeof(char*)*(diff+2));
+    arr[diff] = ptr;
+    arr[diff+1] = 0;
     return 0;
     #undef arr
 }
