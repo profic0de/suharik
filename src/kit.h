@@ -21,7 +21,10 @@ int __getc(FILE *__stream);
 int __ungetc(int __c, FILE *__stream);
 #define getc(__stream) __getc(__stream)
 #define ungetc(__c, __stream) __ungetc(__c, __stream)
-extern char** files;
+extern struct file {
+    char* filename;
+    char** requirements;
+}** files;
 void* auto_free(void* ptr);
 void str_append(char** str, char c);
 void** array_append(void** arr, void* ptr);

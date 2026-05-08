@@ -1,6 +1,6 @@
 #include "kit.h"
 
-char** files;
+struct file ** files;
 
 #define stack_block(type, ptr) root.blocks = array_append(root.blocks, make_block(type, ptr))
 
@@ -60,8 +60,8 @@ int file_store(char* filename) {
     }
 
     if (files) {
-        char** temp = files-1;
-        while (*++temp&&strcmp(*temp,filename));
+        struct file** temp = files-1;
+        while (*++temp&&strcmp(temp[0]->filename,filename));
         if (*temp) return 0;
     }
 
@@ -71,7 +71,11 @@ int file_store(char* filename) {
         return 1;
     }
 
-    files = array_append(files, auto_free(strdup(filename)));
+    struct file* file = auto_free(malloc(sizeof(struct file)));
+    file->filename = auto_free(strdup(filename));
+    file->requirements = NULL;
+
+    files = array_append(files, file);
 
     parse_fd(fd);
 
