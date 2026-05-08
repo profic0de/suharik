@@ -44,7 +44,7 @@ int parse_fd(FILE* fd) {
             while (*++temp);
 
             if (dict_append(&(temp-1)[0]->requirements, auto_free(strndup(bytes+9, i))))
-                error_message((temp-1)[0]->filename, line-1, tc, i+11, "error: Requirement allready satisfied");
+                return (error_message((temp-1)[0]->filename, line-1, tc+9, i+2, "error: Requirement allready satisfied"), bytes = (free(bytes), NULL), 1);
         }
     }
 
@@ -81,16 +81,12 @@ int file_store(char* filename) {
 
     files = array_append(files, file);
 
-    parse_fd(fd);
+    int r = parse_fd(fd);
 
     auto_free(file->requirements);
 
-    // char** temp = files;
-    // while (*temp++);
-    // parse_file((int)(temp-files)-2);
-
     fclose(fd);
-    return 0;
+    return r;
 }
 
 __attribute__((destructor))

@@ -1,5 +1,4 @@
 #require "stdio"
-#require "stdio"
 
 func main() {
   # Variables and basic arithmetic
