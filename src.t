@@ -1,5 +1,5 @@
+#require <test>
 #require "stdio"
-#require "hi"
 
 func main() {
   # Variables and basic arithmetic

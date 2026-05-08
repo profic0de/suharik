@@ -15,6 +15,7 @@ int parse_fd(FILE* fd) {
     // lookup(operators, "+-*/%%=!><&|^~.{[(,");
     // skip:
 
+    struct file** file = files-1; while (*++file); file -= 1;
     #define chr (c=getc(fd))!=EOF
 
     int c;
@@ -38,18 +39,35 @@ int parse_fd(FILE* fd) {
             while (*++str&&*str!=end) i++;
 
             if (!*str) continue;
-            printf("%.*s\n", i+1, bytes+8);
+            // printf("%.*s\n", i+1, bytes+8);
 
-            struct file** temp = files-1;
-            while (*++temp);
-
-            if (dict_append(&(temp-1)[0]->requirements, auto_free(strndup(bytes+8, i+1))))
-                return (error_message((temp-1)[0]->filename, line-1, tc+9, i+2, "error: Requirement allready satisfied"), bytes = (free(bytes), NULL), 1);
+            if (dict_append(&file[0]->requirements, auto_free(strndup(bytes+8, i+1))))
+                return (error_message(file[0]->filename, line-1, tc+9, i+2, "error: Requirement allready satisfied"), bytes = (free(bytes), NULL), 1);
             continue;
-        } else if (isspace(c)) continue; ungetc(c, fd);
+        } else if (isspace(c)) continue;
 
-        
+        // ungetc(c, fd);
 
+        enum {
+            NONE,
+            NUMBER,
+            FLOAT,
+            KEYWORD,
+            OPERATOR,
+            STRING
+        } token_type = NONE;
+
+        size_t tc = column;
+
+        if (isdigit(c)) token_type = NUMBER;
+
+        while (chr) {
+            if (c=='.') {
+                if (token_type==NUMBER) token_type = FLOAT;
+                else if (token_type==FLOAT||token_type==NONE) 
+                    return (error_message(file[0]->filename, line-1, tc, 1, "check"), bytes = (free(bytes), NULL), 1);
+            }
+        }
     }
 
     return 0;
