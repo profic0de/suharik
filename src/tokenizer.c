@@ -23,26 +23,30 @@ int parse_fd(FILE* fd) {
         if (bytes) bytes = (free(bytes), NULL);
 
         if (c=='#') { //Preprocessor
+            size_t tc = column;
             while (chr&&c!='\n') str_append(&bytes, c);
             if (!bytes) continue;
             int len = strlen(bytes);
             if (len<10) continue;
             if (strncmp(bytes, "require ", 8)) continue;
             // puts(bytes+8);
-            char* temp = bytes+8;
-            char end = temp[0]=='\''||temp[0]=='"'?temp[0]:temp[0]=='<'?'>':'\n';
+            char* str = bytes+8;
+            char end = str[0]=='\''||str[0]=='"'?str[0]:str[0]=='<'?'>':'\n';
             // putc(end, stdout);
 
             int i = 0;
-            while (*++temp&&*temp!=end) i++;
+            while (*++str&&*str!=end) i++;
 
-            if (!(*temp)) continue;
+            if (!*str) continue;
             // printf("%.*s\n", i, bytes+9);
-            //TODO: Use this someday
-        }
 
+            struct file** temp = files-1;
+            while (*++temp);
+
+            if (dict_append(&(temp-1)[0]->requirements, auto_free(strndup(bytes+9, i))))
+                error_message((temp-1)[0]->filename, line-1, tc, i+11, "error: Requirement allready satisfied");
+        }
     }
-    
 
     return 0;
 }
@@ -78,6 +82,8 @@ int file_store(char* filename) {
     files = array_append(files, file);
 
     parse_fd(fd);
+
+    auto_free(file->requirements);
 
     // char** temp = files;
     // while (*temp++);

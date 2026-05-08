@@ -9,6 +9,7 @@ static FILE *last_stream = NULL;
 
 static inline void reset_stack(FILE *stream) {
     if (stream != last_stream) {
+        line = (column = 0, 0);
         stack_top = 0;
         last_stream = stream;
     }

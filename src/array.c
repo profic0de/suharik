@@ -19,6 +19,28 @@ void** array_append(void** arr, void* ptr) {
     return arr;
 }
 
+int dict_append(char*** arr, char* ptr) {
+    if (!ptr) return 0;
+    #define arr (*arr)
+
+    if (!arr) {
+        char** temp = calloc(2, sizeof(ptr));
+        temp[0] = ptr;
+        arr = temp;
+        return 0;
+    }
+
+    char** temp = arr-1; 
+    while (*++temp) if (!strcmp(*temp, ptr)) return 1;
+
+    size_t diff = (size_t)(temp-arr);
+    arr[diff-1] = ptr;
+    arr = realloc(arr, sizeof(char*)*(diff+1));
+    arr[diff] = 0;
+    return 0;
+    #undef arr
+}
+
 void str_append(char** str, char c) {
     if (!c) return;
     #define arr (*str)

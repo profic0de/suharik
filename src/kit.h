@@ -27,6 +27,7 @@ extern struct file {
 }** files;
 void* auto_free(void* ptr);
 void str_append(char** str, char c);
+int dict_append(char*** arr, char* ptr);
 void** array_append(void** arr, void* ptr);
 void error_message(const char* filename, size_t s_line, size_t s_column, size_t token_len, const char* fmt, ...);
 #define array_append(arr, ptr) ((__typeof__(arr))array_append(((void**)(arr)), ((void*)(ptr))))
