@@ -78,7 +78,8 @@ int parse_fd(FILE* fd) {
             case STRING:
                 if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
                 if (c==brackets&&p!='\\') exit = 1;
-                else str_append(&bytes, c);
+                // if (p=='\\'); TODO: Replace \" with " etc. automatically
+                if (!exit) str_append(&bytes, c);
                 break;
             
             default:

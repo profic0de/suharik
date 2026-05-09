@@ -1,6 +1,6 @@
 #require <test>
 #require "stdio"
-
+"walala"
 func main() {
   # Variables and basic arithmetic
   a = 3
