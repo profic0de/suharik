@@ -6,14 +6,19 @@ struct file ** files;
 
 char* handle_token(char** bytes);
 int parse_fd(FILE* fd) {
-    // static char check;
-    // if (check||check++) goto skip;
-    // lookup(spaces, " \t\n\r\v\f");
-    // lookup(equal_oper, "+-*/%%!><&|^");
-    // lookup(double_oper, "+-=><&|");
-    // lookup(delimiters, " \t\n\r\v\f,{}[]()+-*/%%=!><&|^~.\"\'");
-    // lookup(operators, "+-*/%%=!><&|^~.{[(,");
-    // skip:
+    static char check;
+    if (check||check++) goto skip;
+    static char operators[256] = {0};
+    operators['+']++;
+    operators['-']++;
+    operators['/']++;
+    operators['*']++;
+    operators['!']++;
+    operators['=']++;
+    operators['%']++;
+    operators['>']++;
+    operators['<']++;
+    skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
     #define chr (c=getc(fd))!=EOF
@@ -21,7 +26,7 @@ int parse_fd(FILE* fd) {
     int c;
     char* bytes = NULL;
     while (chr) {
-        if (bytes) bytes = (free(bytes), NULL);
+        if (bytes) bytes = (print("%s",bytes), free(bytes), NULL);
 
         if (c=='#') { //Preprocessor
             size_t tc = column;
@@ -46,8 +51,6 @@ int parse_fd(FILE* fd) {
             continue;
         } else if (isspace(c)) continue;
 
-        // ungetc(c, fd);
-
         enum {
             NONE,
             NUMBER,
@@ -60,14 +63,28 @@ int parse_fd(FILE* fd) {
 
         size_t tc = column;
 
-        if (isdigit(c)) token_type = NUMBER;
+        char brackets = '\x00';
 
-        while (chr) {
-            if (c=='.') {
-                if (token_type==NUMBER) token_type = FLOAT;
-                else if (token_type==FLOAT||token_type==NONE)
-                    return (error_message(file[0]->filename, line, tc, 1, token_type?"check":"error: can't start with a dot"), bytes = (free(bytes), NULL), 1);
+        ungetc(c, fd);
+        if (isdigit(c)) token_type = NUMBER;
+        else if (c=='"'||c=='\'') token_type = (str_append(&bytes, getc(fd)), brackets = c, STRING);
+        else if (operators[c]) token_type = OPERATOR;
+        else if (c==EOF) return 0;
+        else token_type = KEYWORD;
+
+        int exit=0, p=0;
+        while (chr&&!exit) {
+            switch (token_type) {
+            case STRING:
+                if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
+                if (c==brackets&&p!='\\') exit = 1;
+                else str_append(&bytes, c);
+                break;
+            
+            default:
+                break;
             }
+            p=c;
         }
     }
 
