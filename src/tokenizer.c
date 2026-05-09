@@ -82,6 +82,10 @@ int parse_fd(FILE* fd) {
                 if (!exit) str_append(&bytes, c);
                 break;
             
+            case KEYWORD:
+                
+                break;
+
             default:
                 break;
             }
