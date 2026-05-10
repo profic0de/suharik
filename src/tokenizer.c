@@ -83,7 +83,7 @@ int parse_fd(FILE* fd) {
                 break;
             
             case KEYWORD:
-                
+                if (isalnum(c))
                 break;
 
             default:

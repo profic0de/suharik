@@ -16,12 +16,17 @@ $(OUT): $(OBJ)
 	@mkdir -p $(dir $@)
 	gcc -g -fsanitize=address $(ARGS) -c $< -o $@
 
-.PHONY: run, prod, clean, git
+.PHONY: run, prod, clean, git, test
 
 git:
 	@git add .
 	@git commit -m "$$(date +%d/%-m/%y)"
 	@git push
+
+test:
+	gcc $(ARGS) -o ./build/test test.c
+	@echo --------------------
+	@./$(OUT) $(PROGRAM_ARGS)
 
 prod:
 	gcc $(ARGS) -o $(OUT) $(SRC)
