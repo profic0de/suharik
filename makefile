@@ -24,9 +24,9 @@ git:
 	@git push
 
 test:
-	gcc $(ARGS) -o ./build/test test.c
+	gcc $(ARGS) -o ./ignore/test ./ignore/test.c
 	@echo --------------------
-	@./$(OUT) $(PROGRAM_ARGS)
+	@./ignore/test $(PROGRAM_ARGS)
 
 prod:
 	gcc $(ARGS) -o $(OUT) $(SRC)
