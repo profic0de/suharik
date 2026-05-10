@@ -83,7 +83,7 @@ int parse_fd(FILE* fd) {
                 break;
             
             case KEYWORD:
-                if (isspace(c)) exit = (ungetc(c, fd), 1);
+                if (isspace(c)||!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
 
                 if ((isalnum(c)||c=='_')&&!exit) str_append(&bytes, c);
                 break;
