@@ -88,6 +88,12 @@ int parse_fd(FILE* fd) {
                 if ((isalnum(c)||c=='_')&&!exit) str_append(&bytes, c);
                 break;
 
+            case OPERATOR:
+                if (isspace(c)) exit = (ungetc(c, fd), 1);
+                
+                if (!exit) str_append(&bytes, c);
+                break;
+
             default:
                 break;
             }
