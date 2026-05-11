@@ -20,6 +20,12 @@ int parse_fd(FILE* fd) {
     operators['<']++;
     operators['(']++;
     operators[')']++;
+    operators['&']++;
+    operators['|']++;
+    operators['^']++;
+    operators['~']++;
+    operators['{']++;
+    operators['}']++;
     skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
@@ -28,7 +34,7 @@ int parse_fd(FILE* fd) {
     int c;
     char* bytes = NULL;
     while (chr) {
-        if (bytes) bytes = (print("%s",bytes), free(bytes), NULL);
+        if (bytes) bytes = (printf("'%s' ",bytes), free(bytes), NULL);
 
         if (c=='#') { //Preprocessor
             size_t tc = column;
@@ -74,6 +80,8 @@ int parse_fd(FILE* fd) {
         else if (c==EOF) return 0;
         else token_type = KEYWORD;
 
+        // str_append(&bytes, c);
+
         int exit=0, p=0;
         while (chr&&!exit) {
             switch (token_type) {
@@ -106,7 +114,7 @@ int parse_fd(FILE* fd) {
                 break;
             }
             p=c;
-        }
+        } if (c=='#') ungetc(c, fd);
     }
 
     return 0;
