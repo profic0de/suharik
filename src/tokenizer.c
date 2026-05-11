@@ -18,6 +18,8 @@ int parse_fd(FILE* fd) {
     operators['%']++;
     operators['>']++;
     operators['<']++;
+    operators['(']++;
+    operators[')']++;
     skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
@@ -83,19 +85,19 @@ int parse_fd(FILE* fd) {
                 break;
             
             case KEYWORD:
-                if (isspace(c)||c=='#'||!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
+                if (!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
 
                 if (!exit) str_append(&bytes, c);
                 break;
 
             case OPERATOR:
-                if (isspace(c)||c=='#') exit = (ungetc(c, fd), 1);
+                if (!operators[c]) exit = (ungetc(c, fd), 1);
                 
                 if (!exit) str_append(&bytes, c);
                 break;
 
             case NUMBER:
-                if (isspace(c)||c=='#') exit = (ungetc(c, fd), 1);
+                if (!isdigit(c)) exit = (ungetc(c, fd), 1);
                 
                 if (!exit) str_append(&bytes, c);
                 break;
