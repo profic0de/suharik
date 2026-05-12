@@ -34,7 +34,7 @@ int parse_fd(FILE* fd) {
     int c;
     char* bytes = NULL;
     while (chr) {
-        if (bytes) bytes = (printf("'%s' ",bytes), free(bytes), NULL);
+        if (bytes) bytes = (free(bytes), NULL);
 
         if (c=='#') { //Preprocessor
             size_t tc = column;
