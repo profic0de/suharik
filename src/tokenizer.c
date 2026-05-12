@@ -36,7 +36,6 @@ int parse_fd(FILE* fd) {
     while (chr) {
         if (bytes) bytes = (free(bytes), NULL);
 
-
         if (c=='#') { //Preprocessor
             size_t tc = column;
             while (chr&&c!='\n') str_append(&bytes, c);
@@ -75,11 +74,14 @@ int parse_fd(FILE* fd) {
         char brackets = '\x00';
 
         ungetc(c, fd);
+        str_append(&bytes, getc(fd));
         if (isdigit(c)) token_type = NUMBER;
-        else if (c=='"'||c=='\'') token_type = (str_append(&bytes, getc(fd)), brackets = c, STRING);
+        else if (c=='"'||c=='\'') token_type = (brackets = c, STRING);
         else if (operators[c]) token_type = OPERATOR;
         else if (c==EOF) return 0;
         else token_type = KEYWORD;
+
+        printf("(%s)",bytes);
 
         // str_append(&bytes, c);
 
@@ -92,7 +94,7 @@ int parse_fd(FILE* fd) {
                 // if (p=='\\'); TODO: Replace \" with " etc. automatically
                 if (!exit) str_append(&bytes, c);
                 break;
-            
+
             case KEYWORD:
                 if (!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
 
@@ -115,9 +117,10 @@ int parse_fd(FILE* fd) {
                 break;
             }
             p=c;
-        } if (c=='#') ungetc(c, fd);
+        }
 
-        if (bytes) bytes = (printf("'%s' ",bytes), free(bytes), NULL);
+        // if (bytes) bytes = (free(bytes), NULL);
+        if (bytes) bytes = (printf("[%s] ",bytes), free(bytes), NULL);
     }
 
     return 0;
