@@ -36,6 +36,7 @@ int parse_fd(FILE* fd) {
     while (chr) {
         if (bytes) bytes = (free(bytes), NULL);
 
+
         if (c=='#') { //Preprocessor
             size_t tc = column;
             while (chr&&c!='\n') str_append(&bytes, c);
