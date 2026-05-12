@@ -73,54 +73,82 @@ int parse_fd(FILE* fd) {
 
         char brackets = '\x00';
 
-        ungetc(c, fd);
-        str_append(&bytes, getc(fd));
+        // ungetc(c, fd);
+        str_append(&bytes, c);
         if (isdigit(c)) token_type = NUMBER;
         else if (c=='"'||c=='\'') token_type = (brackets = c, STRING);
         else if (operators[c]) token_type = OPERATOR;
-        else if (c==EOF) return 0;
         else token_type = KEYWORD;
 
-        printf("(%s)",bytes);
+        switch (token_type) {
+        case NUMBER:
+            while (chr&&isdigit(c)) str_append(&bytes, c);
+            break;
 
+        case STRING:
+            int p = 0;
+            while (chr) {
+                if ((p!='\\'&&c==brackets)||c=='\n') break;
+                str_append(&bytes, c);
+                p = c;
+            }
+            // if (brackets!=(c=getc(fd))) ungetc(c, fd);
+            // if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
+            break;
+
+        case OPERATOR:
+            while (chr&&operators[c]) str_append(&bytes, c);
+            break;
+        
+        case KEYWORD:
+            while (chr&&(isalnum(c)||c=='_')) str_append(&bytes, c);
+            break;
+        
+        default:
+            break;
+        }
+        ungetc(c, fd);
+
+        // [x]: old version
         // str_append(&bytes, c);
 
-        int exit=0, p=0;
-        while (chr&&!exit) {
-            switch (token_type) {
-            case STRING:
-                if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
-                if (c==brackets&&p!='\\') exit = 1;
-                // if (p=='\\'); TODO: Replace \" with " etc. automatically
-                if (!exit) str_append(&bytes, c);
-                break;
+        // int exit=0, p=0;
+        // while (chr&&!exit) {
+        //     switch (token_type) {
+        //     case STRING:
+        //         if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
+        //         if (c==brackets&&p!='\\') exit = 1;
+        //         // if (p=='\\'); TODO: Replace \" with " etc. automatically
+        //         if (!exit) str_append(&bytes, c);
+        //         break;
 
-            case KEYWORD:
-                if (!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
+        //     case KEYWORD:
+        //         if (!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
 
-                if (!exit) str_append(&bytes, c);
-                break;
+        //         if (!exit) str_append(&bytes, c);
+        //         break;
 
-            case OPERATOR:
-                if (!operators[c]) exit = (ungetc(c, fd), 1);
+        //     case OPERATOR:
+        //         if (!operators[c]) exit = (ungetc(c, fd), 1);
                 
-                if (!exit) str_append(&bytes, c);
-                break;
+        //         if (!exit) str_append(&bytes, c);
+        //         break;
 
-            case NUMBER:
-                if (!isdigit(c)) exit = (ungetc(c, fd), 1);
+        //     case NUMBER:
+        //         if (!isdigit(c)) exit = (ungetc(c, fd), 1);
                 
-                if (!exit) str_append(&bytes, c);
-                break;
+        //         if (!exit) str_append(&bytes, c);
+        //         break;
 
-            default:
-                break;
-            }
-            p=c;
-        }
+        //     default:
+        //         break;
+        //     }
+        //     p=c;
+        // }
 
         // if (bytes) bytes = (free(bytes), NULL);
-        if (bytes) bytes = (printf("[%s] ",bytes), free(bytes), NULL);
+        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);
+        // if (c==EOF) break;
     }
 
     return 0;
