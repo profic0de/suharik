@@ -115,6 +115,8 @@ int parse_fd(FILE* fd) {
             }
             p=c;
         } if (c=='#') ungetc(c, fd);
+
+        if (bytes) bytes = (printf("'%s' ",bytes), free(bytes), NULL);
     }
 
     return 0;
