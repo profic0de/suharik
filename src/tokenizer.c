@@ -46,7 +46,10 @@ int parse_fd(FILE* fd) {
 
         // [ ] Getting the token type
         if (!chr) return 0;
-        else if (c=='#') while (chr&&c!='\n');
+        else if (c=='#') {
+            print("debug");
+            while (chr&&c!='\n');
+        }
         if (isspace(c)) while (chr&&isspace(c));
 
         if (isdigit(c)) token_type = NUMBER;
