@@ -29,126 +29,31 @@ int parse_fd(FILE* fd) {
     skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
-    #define chr (c=getc(fd))!=EOF
+    #define chr ((c=getc(fd))!=EOF)
 
-    int c;
+    int c = 0;
     char* bytes = NULL;
-    while (chr) {
-        if (bytes) bytes = (free(bytes), NULL);
-
-        if (c=='#') { //Preprocessor
-            size_t tc = column;
-            while (chr&&c!='\n') str_append(&bytes, c);
-            if (!bytes) continue;
-            int len = strlen(bytes);
-            if (len<10) continue;
-            if (strncmp(bytes, "require ", 8)) continue;
-            // puts(bytes+8);
-            char* str = bytes+8;
-            char end = str[0]=='\''||str[0]=='"'?str[0]:str[0]=='<'?'>':'\n';
-            // putc(end, stdout);
-
-            int i = 0;
-            while (*++str&&*str!=end) i++;
-
-            if (!*str) continue;
-            // printf("%.*s\n", i+1, bytes+8);
-
-            if (dict_append(&file[0]->requirements, auto_free(strndup(bytes+8, i+1))))
-                return (error_message(file[0]->filename, line-1, tc+9, i+2, "error: Requirement allready satisfied"), bytes = (free(bytes), NULL), 1);
-            continue;
-        } else if (isspace(c)) continue;
-
+    while (c!=EOF) {
         enum {
             NONE,
             NUMBER,
             FLOAT,
             KEYWORD,
-            OPERATOR,
+            SYMBOL,
             STRING,
             PATH
         } token_type = NONE;
 
-        size_t tc = column;
+        // [ ] Getting the token type
+        if (!chr) return 0;
+        else if (c=='#') while (chr&&c!='\n');
+        if (isspace(c)) while (chr&&isspace(c));
 
-        char brackets = '\x00';
-
-        // ungetc(c, fd);
-        str_append(&bytes, c);
         if (isdigit(c)) token_type = NUMBER;
-        else if (c=='"'||c=='\'') token_type = (brackets = c, STRING);
-        else if (operators[c]) token_type = OPERATOR;
-        else token_type = KEYWORD;
-
-        switch (token_type) {
-        case NUMBER:
-            while (chr&&isdigit(c)) str_append(&bytes, c);
-            break;
-
-        case STRING:
-            int p = 0;
-            while (chr) {
-                if ((p!='\\'&&c==brackets)||c=='\n') break;
-                str_append(&bytes, c);
-                p = c;
-            }
-            // if (brackets!=(c=getc(fd))) ungetc(c, fd);
-            // if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
-            break;
-
-        case OPERATOR:
-            while (chr&&operators[c]) str_append(&bytes, c);
-            break;
+        else if (operators[c]) token_type = SYMBOL;
+        printf("%c ", c);
         
-        case KEYWORD:
-            while (chr&&(isalnum(c)||c=='_')) str_append(&bytes, c);
-            break;
-        
-        default:
-            break;
-        }
-        ungetc(c, fd);
-
-        // [x]: old version
-        // str_append(&bytes, c);
-
-        // int exit=0, p=0;
-        // while (chr&&!exit) {
-        //     switch (token_type) {
-        //     case STRING:
-        //         if (c=='\n') return (error_message(file[0]->filename, line-1, tc, 1, "error: Unmatched opening bracket"), bytes = (free(bytes), NULL), 1);
-        //         if (c==brackets&&p!='\\') exit = 1;
-        //         // if (p=='\\'); TODO: Replace \" with " etc. automatically
-        //         if (!exit) str_append(&bytes, c);
-        //         break;
-
-        //     case KEYWORD:
-        //         if (!(isalnum(c)||c=='_')) exit = (ungetc(c, fd), 1);
-
-        //         if (!exit) str_append(&bytes, c);
-        //         break;
-
-        //     case OPERATOR:
-        //         if (!operators[c]) exit = (ungetc(c, fd), 1);
-                
-        //         if (!exit) str_append(&bytes, c);
-        //         break;
-
-        //     case NUMBER:
-        //         if (!isdigit(c)) exit = (ungetc(c, fd), 1);
-                
-        //         if (!exit) str_append(&bytes, c);
-        //         break;
-
-        //     default:
-        //         break;
-        //     }
-        //     p=c;
-        // }
-
-        // if (bytes) bytes = (free(bytes), NULL);
-        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);
-        // if (c==EOF) break;
+        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);    
     }
 
     return 0;
