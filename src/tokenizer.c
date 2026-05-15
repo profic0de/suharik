@@ -6,26 +6,11 @@ struct file ** files;
 
 char* handle_token(char** bytes);
 int parse_fd(FILE* fd) {
-    static char check;
-    if (check||check++) goto skip;
-    static char operators[256] = {0};
-    operators['+']++;
-    operators['-']++;
-    operators['/']++;
-    operators['*']++;
-    operators['!']++;
-    operators['=']++;
-    operators['%']++;
-    operators['>']++;
-    operators['<']++;
-    operators['(']++;
-    operators[')']++;
-    operators['&']++;
-    operators['|']++;
-    operators['^']++;
-    operators['~']++;
-    operators['{']++;
-    operators['}']++;
+    static char* list = "+-/*!=%%><()[]{}&|~^;";
+    static char operators[256];
+    if (operators[*list]) goto skip;
+    char* _list = list-1;
+    while (*++_list) operators[*_list]++;
     skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
@@ -46,15 +31,41 @@ int parse_fd(FILE* fd) {
 
         // [ ] Getting the token type
         if (!chr) return 0;
-        else if (c=='#') {
-            print("debug");
-            while (chr&&c!='\n');
-        }
         if (isspace(c)) while (chr&&isspace(c));
+        if (c=='#') {
+            while (chr&&c!='\n');
+            continue;
+        }
 
-        if (isdigit(c)) token_type = NUMBER;
-        else if (operators[c]) token_type = SYMBOL;
-        printf("%c ", c);
+        if (isdigit(c)) {
+            token_type = NUMBER;
+            str_append(&bytes, c);
+            while (chr) {
+                if (isspace(c)||operators[c]) break;
+                else if (isalpha(c)) return (error_message(file[0]->filename, line, column, 1, "error: a number can't contain letters"), 1);
+                else if (c=='.'&&token_type==NUMBER) token_type = FLOAT;
+                else if (c=='.') return (error_message(file[0]->filename, line, column, 1, "error: a number can only have one dot"), 1);
+                str_append(&bytes, c);
+            }
+        } else if (operators[c]) {
+            token_type = SYMBOL;
+            str_append(&bytes, c);
+            while (chr&&operators[c]) str_append(&bytes, c);
+            ungetc(c, fd);
+        } else if (c=='\''||c=='"') {
+            token_type = STRING;
+            size_t a = column;
+            char b = c, p = 0;
+            str_append(&bytes, c);
+            while (chr&&!(c==b&&p!='\\')&&c!='\n') p = (str_append(&bytes, c), c);
+            if (c=='\n') return (free(bytes), error_message(file[0]->filename, line-1, a, 1, "error: string not closed"), 1);
+        } else {
+            token_type = KEYWORD;
+            str_append(&bytes, c);
+            while (chr&&isalnum(c)) str_append(&bytes, c);
+            ungetc(c, fd);
+        }
+        // printf("%c ", c);
         
         if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);    
     }
