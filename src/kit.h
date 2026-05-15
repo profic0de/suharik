@@ -10,10 +10,10 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-#define bitset(arr, bit) ((arr)[(bit) >> 3] |= (1 << ((bit) & 7)))
-#define bitget(arr, bit) (((arr)[(bit) >> 3] >> ((bit) & 7)) & 1)
-#define lookup(name, str) static unsigned char name[32] = {0}; do { for (const char* p = (str); *p; p++) { bitset(name, (unsigned char)*p); } } while (0)
-#define flip(arr) do { for (size_t i = 0; i < (32); i++) { (arr)[i] ^= 0xFF; } } while (0)
+// #define bitset(arr, bit) ((arr)[(bit) >> 3] |= (1 << ((bit) & 7)))
+// #define bitget(arr, bit) (((arr)[(bit) >> 3] >> ((bit) & 7)) & 1)
+// #define lookup(name, str) static unsigned char name[32] = {0}; do { for (const char* p = (str); *p; p++) { bitset(name, (unsigned char)*p); } } while (0)
+// #define flip(arr) do { for (size_t i = 0; i < (32); i++) { (arr)[i] ^= 0xFF; } } while (0)
 
 extern size_t line, column;
 void cleanup(void);
@@ -32,6 +32,20 @@ void** array_append(void** arr, void* ptr);
 void error_message(const char* filename, size_t s_line, size_t s_column, size_t token_len, const char* fmt, ...);
 
 enum token_type {NONE,NUMBER,FLOAT,KEYWORD,SYMBOL,STRING,PATH};
+struct AST {
+    enum {
+        V_ARR,
+        V_STR,
+        V_NUM,
+        V_TYPE,
+
+        FUNCTION,
+        OBJECT,
+
+        OPERATION,
+
+    } type;
+};
 
 char* handle_token(char** bytes, enum token_type token_type);
 

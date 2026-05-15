@@ -2,52 +2,54 @@
 #require "stdio"
 
 func main() {
-  # Variables and basic arithmetic
-  f = 3.14
-  a = 3
-  b = 4
-  c = 3 + 4
-  d = 10 / 2
+	# Variables and basic arithmetic
+	f = 3.14
+	a = 3
+	b = 4
+	c = 3 + 4
+	d = 10 / 2
 
-  # Bitwise operations
-  e = 3 >> 4
-  f = 8 << 2
-  g = 12 & 5
-  h = 8 | 2
-  i = 5 ^ 3
-  
-  # Compound assignment operators
-  x = 5
-  x *= 2
-  y = 20
-  y /= 4
-  
-  # String literals with printf
-  printf("%d\n", c)
-  printf("%d\n", d)
-  
-  # Function calls with multiple arguments
-  printf("Result: %d, Division: %d\n", c, d)
-  
-  # More complex expressions
-  result = (a + b) * 2
-  printf("(a + b) * 2 = %d\n", result)
-  
-  # Negative numbers
-  neg = -5
-  pos = 10 + neg
-  printf("pos = %d\n", pos)
-  
-  # Compound assignments in action
-  printf("x *= 2: %d, y /= 4: %d\n", x, y)
+	# Bitwise operations
+	e = 3 >> 4
+	f = 8 << 2
+	g = 12 & 5
+	h = 8 | 2
+	i = 5 ^ 3
+	
+	# Compound assignment operators
+	x = 5
+	x *= 2
+	y = 20
+	y /= 4
+	
+	# String literals with printf
+	printf("%d\n", c)
+	printf("%d\n", d)
+	
+	# Function calls with multiple arguments
+	printf("Result: %d, Division: %d\n", c, d)
+	
+	# More complex expressions
+	result = (a + b) * 2
+	printf("(a + b) * 2 = %d\n", result)
+	
+	# Negative numbers
+	neg = -5
+	pos = 10 + neg
+	printf("pos = %d\n", pos)
+	
+	# Compound assignments in action
+	printf("x *= 2: %d, y /= 4: %d\n", x, y)
 }
 
+obj
+
 func add(x, y) {
-  return x + y
+	return x + y
 }
 
 func help(a) {return a}
 
 func multiply(x, y) {
-  return x*y
+	return x*y
 }

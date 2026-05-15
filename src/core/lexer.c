@@ -79,7 +79,7 @@ int parse_fd(FILE* fd) {
         }
 
         handle_token(&bytes, token_type);
-        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);
+        if (bytes) bytes = (free(bytes), NULL);
     }
     handle_token(NULL, 0);
 
