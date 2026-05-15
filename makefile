@@ -16,14 +16,14 @@ $(OUT): $(OBJ)
 	@mkdir -p $(dir $@)
 	gcc -g -fsanitize=address $(ARGS) -c $< -o $@
 
-.PHONY: run, prod, clean, git, test
+.PHONY: run, prod, clean, git, make
 
 git:
 	@git add .
 	@git commit -m "$$(date +%d/%-m/%y)"
 	@git push
 
-test:
+make: # Used to be called 'test' but I renamed it to 'make' because of muscle memory
 	gcc $(ARGS) -o ./ignore/test ./ignore/test.c
 	@echo --------------------
 	@./ignore/test $(PROGRAM_ARGS)

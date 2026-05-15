@@ -8,9 +8,9 @@ char* handle_token(char** bytes);
 int parse_fd(FILE* fd) {
     static char* list = "+-/*!=%%><()[]{}&|~^;";
     static char operators[256];
-    if (operators[*list]) goto skip;
+    if (operators[(int)*list]) goto skip;
     char* _list = list-1;
-    while (*++_list) operators[*_list]++;
+    while (*++_list) operators[(int)*_list]++;
     skip:
 
     struct file** file = files-1; while (*++file); file -= 1;
@@ -55,9 +55,9 @@ int parse_fd(FILE* fd) {
         } else if (c=='\''||c=='"') {
             token_type = STRING;
             size_t a = column;
-            char b = c, p = 0;
+            char b = c, p = 0, po = 0;
             str_append(&bytes, c);
-            while (chr&&!(c==b&&p!='\\')&&c!='\n') p = (str_append(&bytes, c), c);
+            while (chr&&c==b?(po!=p&&p=='\\'):1&&c!='\n') po = (str_append(&bytes, c), p), p = c;
             if (c=='\n') return (free(bytes), error_message(file[0]->filename, line-1, a, 1, "error: string not closed"), 1);
         } else {
             token_type = KEYWORD;
@@ -65,7 +65,6 @@ int parse_fd(FILE* fd) {
             while (chr&&isalnum(c)) str_append(&bytes, c);
             ungetc(c, fd);
         }
-        // printf("%c ", c);
         
         if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);    
     }
