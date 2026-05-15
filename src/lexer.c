@@ -6,7 +6,7 @@ struct file ** files;
 
 char* handle_token(char** bytes);
 int parse_fd(FILE* fd) {
-    static char* list = "+-/*!=%%><()[]{}&|~^;";
+    static char* list = "+-/*!=%%><()[]{}&|~^;,.";
     static char operators[256];
     if (operators[(int)*list]) goto skip;
     char* _list = list-1;
@@ -41,10 +41,10 @@ int parse_fd(FILE* fd) {
             token_type = NUMBER;
             str_append(&bytes, c);
             while (chr) {
-                if (isspace(c)||operators[c]) break;
-                else if (isalpha(c)) return (error_message(file[0]->filename, line, column, 1, "error: a number can't contain letters"), 1);
+                if (isspace(c)||(operators[c]&&c!='.')) break;
+                else if (isalpha(c)) return (free(bytes),error_message(file[0]->filename, line, column, 1, "error: a number can't contain letters"), 1);
                 else if (c=='.'&&token_type==NUMBER) token_type = FLOAT;
-                else if (c=='.') return (error_message(file[0]->filename, line, column, 1, "error: a number can only have one dot"), 1);
+                else if (c=='.') return (free(bytes),error_message(file[0]->filename, line, column, 1, "error: a number can only have one dot"), 1);
                 str_append(&bytes, c);
             }
         } else if (operators[c]) {
@@ -61,8 +61,21 @@ int parse_fd(FILE* fd) {
             if (c=='\n') return (free(bytes), error_message(file[0]->filename, line-1, a, 1, "error: string not closed"), 1);
         } else {
             token_type = KEYWORD;
+            char p = 0;
+            size_t col = column;
             str_append(&bytes, c);
-            while (chr&&isalnum(c)) str_append(&bytes, c);
+            while (chr) {
+                if (!(isalnum(c)||c=='.')) {
+                    if (p=='.') {
+                        if (c=='\n') ungetc(c, fd);
+                        return (free(bytes), error_message(file[0]->filename, line, col+1, 1, "error: expected a keyword"), 1);
+                    } break;
+                } if (p=='.'&&!isalpha(c)) return (free(bytes), error_message(file[0]->filename, line, col+1, 1, "error: invalid keyword"), 1);
+                if (c=='.') token_type = PATH;
+                if (p==c&&c=='.') return (free(bytes), error_message(file[0]->filename, line, column, 1, "error: expected a keyword"), 1);
+                str_append(&bytes, (p=c));
+                col = column;
+            }
             ungetc(c, fd);
         }
 

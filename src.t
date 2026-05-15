@@ -3,6 +3,7 @@
 
 func main() {
   # Variables and basic arithmetic
+  f = 3.14
   a = 3
   b = 4
   c = 3 + 4
