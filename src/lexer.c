@@ -65,7 +65,7 @@ int parse_fd(FILE* fd) {
             while (chr&&isalnum(c)) str_append(&bytes, c);
             ungetc(c, fd);
         }
-        
+
         if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);    
     }
 
