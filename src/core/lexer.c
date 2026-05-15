@@ -4,7 +4,6 @@ struct file ** files;
 
 #define stack_block(type, ptr) root.blocks = array_append(root.blocks, make_block(type, ptr))
 
-char* handle_token(char** bytes);
 int parse_fd(FILE* fd) {
     static char* list = "+-/*!=%%><()[]{}&|~^;,.";
     static char operators[256];
@@ -79,8 +78,10 @@ int parse_fd(FILE* fd) {
             ungetc(c, fd);
         }
 
-        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);    
+        handle_token(&bytes, token_type);
+        if (bytes) bytes = (printf("%s ",bytes), free(bytes), NULL);
     }
+    handle_token(NULL, 0);
 
     return 0;
 }
