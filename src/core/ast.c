@@ -37,10 +37,10 @@ char* handle_token(char** bytes, enum token_type token_type) {
     size_t len = 0; 
     for (size_t i=0; tokens[i]; len=++i) types[i] = types[i*2]; // Shifting the types array bc the enum is int and the array consists of pointers so i need to multiply the index by 2 to skip the 0's :)
 
-    for (size_t i=0; tokens[i]; i++) {
-        
-        
-        print("type: %s, token: %s",type_to_char(types[i]),tokens[i]);
+    for (size_t i=0, r=len-1; i<len; i++, r--) {
+        if (r>0&&types[i]==types[i+1]&&types[i+1]==SYMBOL) { // Declaration
+            printf("assigned %s with the value of %s\n",tokens[i+1],tokens[i]);
+        }
     }
 
     return NULL;

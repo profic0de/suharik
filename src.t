@@ -42,7 +42,11 @@ func main() {
 	printf("x *= 2: %d, y /= 4: %d\n", x, y)
 }
 
-obj
+obj apple {
+	int init() {
+		self.a = 1
+	}
+}
 
 func add(x, y) {
 	return x + y
