@@ -34,11 +34,12 @@ char* handle_token(char** bytes, enum token_type token_type) {
         return NULL;
     }
 
-    size_t n;
+    size_t len = 0; 
+    for (size_t i=0; tokens[i]; len=++i) types[i] = types[i*2]; // Shifting the types array bc the enum is int and the array consists of pointers so i need to multiply the index by 2 to skip the 0's :)
 
     for (size_t i=0; tokens[i]; i++) {
-        if (tokens[(n=i+1)]) types[n] = types[n*2]; // Shifting the types array bc the enum is int and the array consists of pointers so i need to multiply the index by 2 to skip the 0's :)
-
+        
+        
         print("type: %s, token: %s",type_to_char(types[i]),tokens[i]);
     }
 
