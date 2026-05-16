@@ -10,11 +10,6 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-// #define bitset(arr, bit) ((arr)[(bit) >> 3] |= (1 << ((bit) & 7)))
-// #define bitget(arr, bit) (((arr)[(bit) >> 3] >> ((bit) & 7)) & 1)
-// #define lookup(name, str) static unsigned char name[32] = {0}; do { for (const char* p = (str); *p; p++) { bitset(name, (unsigned char)*p); } } while (0)
-// #define flip(arr) do { for (size_t i = 0; i < (32); i++) { (arr)[i] ^= 0xFF; } } while (0)
-
 extern size_t line, column;
 void cleanup(void);
 int __getc(FILE *__stream);
@@ -33,17 +28,24 @@ void error_message(const char* filename, size_t s_line, size_t s_column, size_t 
 
 enum token_type {NONE,NUMBER,FLOAT,KEYWORD,SYMBOL,STRING,PATH};
 struct AST {
-    enum {
-        V_ARR,
-        V_STR,
-        V_NUM,
-        V_TYPE,
+    char* name;
 
+    union {
+        struct AST** array;
+        uintptr_t value;
+        void* pointer;
+    };
+
+    enum {
+        ROOT,
+
+        ARRAY,
+        VARIABLE,
         FUNCTION,
         OBJECT,
 
         OPERATION,
-
+        VALUE
     } type;
 };
 
@@ -51,8 +53,5 @@ char* handle_token(char** bytes, enum token_type token_type);
 
 #define array_append(arr, ptr) ((__typeof__(arr))array_append(((void**)(arr)), ((void*)(ptr))))
 #define print(fmt, ...) printf("[%s:%d] " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
-
-// #undef EOF
-// #define EOF 0xFF
 
 #endif

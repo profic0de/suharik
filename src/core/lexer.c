@@ -30,7 +30,7 @@ int parse_fd(FILE* fd) {
 
         // [ ] Getting the token type
         if (!chr) return 0;
-        if (isspace(c)) while (chr&&isspace(c));
+        if (isspace(c)) continue;
         if (c=='#') {
             while (chr&&c!='\n');
             continue;
