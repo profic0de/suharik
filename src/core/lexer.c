@@ -25,7 +25,8 @@ int parse_fd(FILE* fd) {
             KEYWORD,
             SYMBOL,
             STRING,
-            PATH
+            PATH,
+            WORD
         } token_type = NONE;
 
         // [ ] Getting the token type
@@ -63,7 +64,7 @@ int parse_fd(FILE* fd) {
             token_type = KEYWORD;
             char p = 0;
             size_t col = column;
-            size_t val = 0;
+            size_t val = c;
             size_t len = 1;
             str_append(&bytes, c);
             while (chr) {
@@ -78,9 +79,18 @@ int parse_fd(FILE* fd) {
                 // if (token_type==PATH);
                 str_append(&bytes, (p=c));
                 col = column;
+                val = (val<<8)|c;
                 len++;
-            } if (token_type==KEYWORD) {
+            } if (token_type==KEYWORD&&len<=7) {
+                // break, if, while, else, return
+                size_t words[] = {*(size_t*)"break\0\0",
+                    *(size_t*)"if\0\0\0\0\0",
+                    *(size_t*)"while\0\0",
+                    *(size_t*)"else\0\0\0",
+                    *(size_t*)"return\0"
+                };
                 
+                if (val) token_type = WORD;
             }
             ungetc(c, fd);
         }
