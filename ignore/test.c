@@ -12,9 +12,7 @@ int main() {
     printf("%016lx\n",r);
     r = r ^ bytes;
     printf("%016lx\n",r);
-    r = ~r;
-    printf("%016lx\n",r);
-    r = r & 0x8080808080808080;
+    r = (r - 0x0101010101010101) & ~r & 0x8080808080808080;
     printf("%016lx\n",r);
 
     return 0;
