@@ -48,9 +48,15 @@ int parse_fd(FILE* fd) {
             }
         } else if (operators[c]) {
             token_type = SYMBOL;
-            str_append(&bytes, c);
-            while (chr&&operators[c]) str_append(&bytes, c);
-            ungetc(c, fd);
+            size_t val = 0;
+            while (operators[c]) {
+                str_append(&bytes, c);
+                val = (val << 8) | c;
+                
+                
+
+                if (!chr) break;
+            } ungetc(c, fd);
         } else if (c=='\''||c=='"') {
             token_type = STRING;
             size_t a = column;

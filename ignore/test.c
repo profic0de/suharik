@@ -5,18 +5,17 @@
 
 int main() {
 
-    char* str = "\\x\"";
-    int close = 0;
-    char po = str[0];
-    char p = str[1];
-    char c = str[2];
-    char b = str[2];
+    unsigned char c = '[';
+    size_t bytes = *(size_t*)"[]{}()";
 
-    // if (po^p?p=='\\':0) check = 1;
-
-    close = ((po!=p&&p=='\\'));
-
-    printf("continue: %s\n",close?"true":"false");
+    size_t r = 0x0101010101010101*c;
+    printf("%016lx\n",r);
+    r = r ^ bytes;
+    printf("%016lx\n",r);
+    r = ~r;
+    printf("%016lx\n",r);
+    r = r & 0x8080808080808080;
+    printf("%016lx\n",r);
 
     return 0;
 }
