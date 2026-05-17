@@ -64,7 +64,7 @@ int parse_fd(FILE* fd) {
             char p = 0;
             size_t col = column;
             size_t val = 0;
-            char len = 0;
+            size_t len = 1;
             str_append(&bytes, c);
             while (chr) {
                 if (!(isalnum(c)||c=='.')) {
@@ -78,6 +78,9 @@ int parse_fd(FILE* fd) {
                 // if (token_type==PATH);
                 str_append(&bytes, (p=c));
                 col = column;
+                len++;
+            } if (token_type==KEYWORD) {
+                
             }
             ungetc(c, fd);
         }
