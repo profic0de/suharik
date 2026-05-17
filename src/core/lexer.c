@@ -29,7 +29,7 @@ int parse_fd(FILE* fd) {
         } token_type = NONE;
 
         // [ ] Getting the token type
-        if (!chr) return 0;
+        if (!chr) break;
         if (isspace(c)) continue;
         if (c=='#') {
             while (chr&&c!='\n');
@@ -48,15 +48,10 @@ int parse_fd(FILE* fd) {
             }
         } else if (operators[c]) {
             token_type = SYMBOL;
-            size_t val = 0;
-            while (operators[c]) {
-                str_append(&bytes, c);
-                val = (val << 8) | c;
-                
-                
-
-                if (!chr) break;
-            } ungetc(c, fd);
+            str_append(&bytes, c);
+            if (lookup(*(size_t*)"[]{}();,", c)||c=='.') c=getc(fd);
+            else while (chr&&operators[c]) str_append(&bytes, c);
+            ungetc(c, fd);
         } else if (c=='\''||c=='"') {
             token_type = STRING;
             size_t a = column;
@@ -68,6 +63,8 @@ int parse_fd(FILE* fd) {
             token_type = KEYWORD;
             char p = 0;
             size_t col = column;
+            size_t val = 0;
+            char len = 0;
             str_append(&bytes, c);
             while (chr) {
                 if (!(isalnum(c)||c=='.')) {
@@ -78,6 +75,7 @@ int parse_fd(FILE* fd) {
                 } if (p=='.'&&!isalpha(c)) return (free(bytes), error_message(file[0]->filename, line, col+1, 1, "error: invalid keyword"), 1);
                 if (c=='.') token_type = PATH;
                 if (p==c&&c=='.') return (free(bytes), error_message(file[0]->filename, line, column, 1, "error: expected a keyword"), 1);
+                // if (token_type==PATH);
                 str_append(&bytes, (p=c));
                 col = column;
             }
