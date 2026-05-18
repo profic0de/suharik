@@ -33,6 +33,7 @@ struct AST {
     union {
         struct AST** array;
         uintptr_t value;
+        // Can be pointer to type declaration
         void* pointer;
     };
 
@@ -43,9 +44,10 @@ struct AST {
         VARIABLE,
         FUNCTION,
         OBJECT,
+        TYPE,
 
         OPERATION,
-        VALUE
+        VALUE,
     } type;
 };
 

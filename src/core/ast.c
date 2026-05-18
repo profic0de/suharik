@@ -34,16 +34,10 @@ char* handle_token(char** bytes, enum token_type token_type) {
         return NULL;
     }
 
-    size_t len = 0; 
-    for (size_t i=0; tokens[i]; len=++i) types[i] = types[i*2]; // Shifting the types array bc the enum is int and the array consists of pointers so i need to multiply the index by 2 to skip the 0's :)
+    // size_t len = 0; 
+    // for (size_t i=0; tokens[i]; len=++i) types[i] = types[i*2]; // Shifting the types array bc the enum is int and the array consists of pointers so i need to multiply the index by 2 to skip the 0's :)
 
-    for (size_t i=0, r=len-1; i<len; i++, r--) {
-        if (r>2&&types[i]==KEYWORD&&types[i+1]==KEYWORD&&types[i+2]==SYMBOL&&tokens[i+2][0]=='(') { // Declaration
-            
-
-            printf("declared %s, (%s)\n",tokens[i+1], tokens[i]);
-        }
-    }
+    // printf("declared %s, (%s)\n",tokens[i+1], tokens[i]);
 
     return NULL;
 }

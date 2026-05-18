@@ -24,7 +24,10 @@ int parse_fd(FILE* fd) {
         if (!chr) break;
         if (isspace(c)) continue;
         if (c=='#') {
-            while (chr&&c!='\n');
+            size_t val = 0;
+            while (chr&&c!='\n') if (!(val&((size_t)0xFF<<(8*6)))) val = (val<<8)|c; else str_append(&bytes, c);
+            if (val==((size_t)'requ'<<(8*3)|'ire')) printf("Module requires: %s\n", bytes+1);
+            bytes = (free(bytes), NULL);
             continue;
         }
 
