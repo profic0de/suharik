@@ -1,7 +1,9 @@
 #require <test>
 #require "stdio"
 
-func main() {
+int g = 0;
+
+int main() {
 	# Variables and basic arithmetic
 	f = 3.14
 	a = 3
@@ -42,18 +44,18 @@ func main() {
 	printf("x *= 2: %d, y /= 4: %d\n", x, y)
 }
 
-obj apple {
+obj apple() {
 	int init() {
 		self.a = 1
 	}
 }
 
-func add(x, y) {
+int add(x, y) {
 	return x + y
 }
 
-func help(a) {return a}
+int help(a) {return a}
 
-func multiply(x, y) {
+int multiply(x, y) {
 	return x*y
 }

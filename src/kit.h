@@ -26,7 +26,7 @@ int dict_append(char*** arr, char* ptr);
 void** array_append(void** arr, void* ptr);
 void error_message(const char* filename, size_t s_line, size_t s_column, size_t token_len, const char* fmt, ...);
 
-enum token_type {NONE,NUMBER,FLOAT,KEYWORD,SYMBOL,STRING,PATH};
+enum token_type {NONE,NUMBER,FLOAT,KEYWORD,SYMBOL,STRING,PATH,WORD};
 struct AST {
     char* name;
 

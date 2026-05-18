@@ -18,16 +18,7 @@ int parse_fd(FILE* fd) {
     int c = 0;
     char* bytes = NULL;
     while (c!=EOF) {
-        enum {
-            NONE,
-            NUMBER,
-            FLOAT,
-            KEYWORD,
-            SYMBOL,
-            STRING,
-            PATH,
-            WORD
-        } token_type = NONE;
+        enum token_type token_type = NONE;
 
         // [ ] Getting the token type
         if (!chr) break;
@@ -83,14 +74,20 @@ int parse_fd(FILE* fd) {
                 len++;
             } if (token_type==KEYWORD&&len<=7) {
                 // break, if, while, else, return
-                size_t words[] = {*(size_t*)"break\0\0",
-                    *(size_t*)"if\0\0\0\0\0",
-                    *(size_t*)"while\0\0",
-                    *(size_t*)"else\0\0\0",
-                    *(size_t*)"return\0"
+                size_t words[] = {
+                    (size_t)'brea'<<(8*1)|'k',
+                    (size_t)'if',
+                    (size_t)'whil'<<(8*1)|'e',
+                    (size_t)'else',
+                    (size_t)'retu'<<(8*2)|'rn',
+                    (size_t)'cont'<<(8*4)|'inue',
+                    (size_t)'obj',
+                    0
                 };
                 
-                if (val) token_type = WORD;
+                int i = 0;
+                while (words[i]) if (words[i++]==val) token_type = WORD;
+
             }
             ungetc(c, fd);
         }
